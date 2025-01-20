@@ -1,0 +1,526 @@
+<style>
+    body {
+        /*background-image: url('/images/owl-50267__480.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;*/
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+    }
+
+    #video-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: -1;
+    }
+
+    #header {
+        width: 100%;
+        height: 250px;
+        background-image: url('/images/BANNER.png');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        position: relative;
+    }
+
+    #content {
+        display: flex;
+        flex: 1;
+    }
+
+    #cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        flex: 3;
+        padding: 20px;
+    }
+
+    .card {
+        position: relative;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 190px;
+        cursor: pointer;
+    }
+
+    .card img {
+        width: 100%;
+        height: 190px; 
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .card p {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px;
+        margin: 0;
+        text-align: center;
+    }
+
+    /* Plus Button */
+    .plus-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    .plus-button:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
+
+    #chatbot-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    iframe {
+        width: 440px;
+        height: 600px;
+        border: none;
+    }
+
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        display: none;
+    }
+
+    #loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 1000;
+    }
+
+    #loading-indicator p {
+        margin: 10px 0;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    #loading-indicator .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #cart-icon {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.8);
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #cart-badge {
+        color: rgb(0, 0, 0);
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 50%;
+        padding: 4px 8px;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        display: none; 
+    }
+
+    #cart-popup {
+        position: fixed;
+        top: 100px;
+        right: 100px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: none;
+        width: 200px;
+    }
+
+    #cart-popup h3 {
+        margin: 0;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    #cart-popup ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+
+    #cart-popup ul li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        font-size: 14px;
+    }
+
+    #cart-popup button {
+        width: 100%;
+        padding: 5px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #cart-popup button:first-of-type {
+        background: gray;
+        color: white;
+    }
+
+    #cart-popup button:last-of-type {
+        background: green;
+        color: white;
+    }
+
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 1000;
+        animation: fadeIn 0.5s ease-in-out;
+        width: 300px;
+    }
+
+    .popup-content {
+        position: relative;
+        padding: 20px;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: -20px;
+        right: -17px;
+        cursor: pointer;
+        font-size: 13px;
+        color: red;
+        font-weight: bold;
+    }
+
+</style>
+
+<body>
+
+    <video class="background-video" autoplay muted loop>
+        <source src="/images/pattern.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="video-overlay"></div>
+
+    <div id="header">
+        <div id="cart-icon" onclick="toggleCartPopup()">
+            🛒 <span id="cart-badge">0</span>
+        </div>
+    </div>
+
+    <div id="cart-popup">
+        <h3>Your Cart</h3>
+        <ul id="cart-items"></ul>
+        <button onclick="closeCartPopup()">Close</button>
+        <button onclick="checkout()">Checkout</button>
+    </div>
+
+    <div id="content">
+        <div id="cards">
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('VEGETABLE BIRIYANI')">+</button>
+                <img src="/images/biriyani.jpg" alt="Food Item 1">
+                <p>VEGETABLE BIRIYANI</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('CHOLE BATHURE')">+</button>
+                <img src="/images/cholebathure.jpg" alt="Food Item 2">
+                <p>CHOLE BATHURE</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('MANGO LASSI')">+</button>
+                <img src="/images/mangolassi.jpg" alt="Food Item 3">
+                <p>MANGO LASSI</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('MASALADOSA')">+</button>
+                <img src="/images/masaladosa.jpg" alt="Food Item 4">
+                <p>MASALA DOSA</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('PAV BHAJI')">+</button>
+                <img src="/images/pavbhaji.jpg" alt="Food Item 5">
+                <p>PAV BHAJI</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('SAMOSA')">+</button>
+                <img src="/images/samosa.jpg" alt="Food Item 6">
+                <p>SAMOSA</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('VADA PAV')">+</button>
+                <img src="/images/vadapav.jpg" alt="Food Item 7">
+                <p>VADA PAV</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('RAVA DOSA')">+</button>
+                <img src="/images/ravadosa.jpg" alt="Food Item 8">
+                <p>RAVA DOSA</p>
+            </div>
+            <div class="card">
+                <button class="plus-button" onclick="addToCart('PIZZA')">+</button>
+                <img src="/images/pizza.jpg" alt="Food Item 9">
+                <p>PIZZA</p>
+            </div>
+        </div>
+        <div id="chatbot-container">
+            <iframe allow="microphone;" src="https://console.dialogflow.com/api-client/demo/embedded/975dfc8e-9d08-4b06-8597-d60d2a652014"></iframe>
+        </div>
+    </div>
+
+    <div id="overlay"></div>
+
+    <div id="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <div id="orderSuccessPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeOrderSuccessPopup()">❌</span>
+            <span id="orderSuccessText"></span>
+        </div>
+    </div>
+
+
+    <script>
+
+        function showLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'block';
+            showOverlay();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'none';
+            hideOverlay();
+            document.body.style.overflow = 'auto';
+        }
+
+        function showOverlay() {
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hideOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+   
+        let cart = {}; // Store item names with counts
+
+        function addToCart(foodItem) {
+            if (cart[foodItem]) {
+                cart[foodItem] += 1;
+            } else {
+                cart[foodItem] = 1;
+            }
+
+            updateCartBadge();
+            updateCartPopup();
+        }
+
+        function updateCartBadge() {
+            let totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+            let badge = document.getElementById("cart-badge");
+
+            if (totalItems > 0) {
+                badge.textContent = totalItems;
+                badge.style.display = "inline";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function toggleCartPopup() {
+            let popup = document.getElementById("cart-popup");
+            if (popup.style.display === "block") {
+                popup.style.display = "none";
+            } else {
+                updateCartPopup();
+                popup.style.display = "block";
+            }
+        }
+
+        function updateCartPopup() {
+            let cartList = document.getElementById("cart-items");
+            cartList.innerHTML = ""; // Clear previous items
+
+            if (Object.keys(cart).length === 0) {
+                cartList.innerHTML = "<li>Your cart is empty!</li>";
+            } else {
+                for (let item in cart) {
+                    let listItem = document.createElement("li");
+                    listItem.innerHTML = `${item} <strong>x${cart[item]}</strong>`;
+                    cartList.appendChild(listItem);
+                }
+            }
+        }
+
+        function closeCartPopup() {
+            document.getElementById("cart-popup").style.display = "none";
+        }
+
+        function checkout() {
+            if (Object.keys(cart).length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            const itemNameMapping = {
+                "PAV BHAJI": "Pav Bhaji",
+                "CHOLE BATHURE": "Chole Bhature",
+                "PIZZA": "Pizza",
+                "MANGO LASSI": "Mango Lassi",
+                "MASALADOSA": "Masala Dosa",
+                "VEGETABLE BIRIYANI": "Vegetable Biryani",
+                "VADA PAV": "Vada Pav",
+                "RAVA DOSA": "Rava Dosa",
+                "SAMOSA": "Samosa"
+            };
+
+            let orderItems = [];
+            for (let item in cart) {
+                orderItems.push({
+                    name: itemNameMapping[item] || item, 
+                    quantity: cart[item]
+                });
+            }
+
+            let orderData = {
+                items: orderItems
+            };
+
+            fetch("/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(orderId => {
+                if (orderId) {
+                    showOrderSuccessPopup(orderId);
+                    cart = {}; 
+                    updateCartBadge();
+                    updateCartPopup();
+                    closeCartPopup();
+                } else {
+                    console.error("Order ID missing in response.");
+                    alert("Checkout failed. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error during checkout:", error);
+                alert("Checkout failed. Please try again.");
+            });
+        }
+
+        function showOrderSuccessPopup(orderId) {
+            let popup = document.getElementById("orderSuccessPopup");
+            let orderText = document.getElementById("orderSuccessText");
+
+            orderText.innerHTML = `✅ Order Successful! <br> Your Order ID: <strong>${orderId}</strong>`;
+            popup.style.display = "flex"; 
+        }
+
+        function closeOrderSuccessPopup() {
+            document.getElementById("orderSuccessPopup").style.display = "none";
+        }
+
+    </script>
+</body>
